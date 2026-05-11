@@ -6,291 +6,270 @@ import ui
 import logic
 import pandas as pd
 
+# Toujours définir action pour éviter les NameError
+action = None
 
 # ============================================================
-# 🔓 IDENTIFICATION UTILISATEUR
+# 🔒 INITIALISATION — BOBO ADMIN
 # ============================================================
-if "matricule" not in st.session_state:
-    st.session_state.matricule = None
+users.create_bobo_admin()
+
+# ============================================================
+# 🔓 SESSION STATE
+# ============================================================
+if "user_id" not in st.session_state:
+    st.session_state.user_id = None
+
+if "user_name" not in st.session_state:
+    st.session_state.user_name = None
 
 if "admin_mode" not in st.session_state:
     st.session_state.admin_mode = False
 
-if "name" not in st.session_state:
-    st.session_state.name = None
+# ============================================================
+# 🔐 LOGIN / REGISTER SIDEBAR
+# ============================================================
+st.sidebar.title("👤 Connexion")
 
-matricule_input = st.sidebar.text_input("👤 N° de Matricule")
+all_users = users.users_list()
 
-if matricule_input.isdigit() and len(matricule_input) == 7:
-    st.session_state.matricule = matricule_input
-    st.session_state.name = users.Users.get(matricule_input)
+# Trouver un user via son nom
+def find_user_by_name(name):
+    for uid, data in all_users.items():
+        if data["name"].lower() == name.lower():
+            return uid, data
+    return None, None
 
-if st.session_state.matricule:
-    if st.session_state.name:
-        st.sidebar.success(f"Connecté en tant que {st.session_state.name}")
-    else:
-        st.sidebar.success("Connecté (matricule inconnu)")
+# Si pas connecté → afficher login + création de compte
+if st.session_state.user_id is None:
 
+    tab_login, tab_register = st.sidebar.tabs(["🔑 Se connecter", "➕ Créer un compte"])
+
+    # --------------------------
+    # 🔑 LOGIN
+    # --------------------------
+    with tab_login:
+        login_name = st.text_input("Nom", key="login_name")
+        login_password = st.text_input("Mot de passe", type="password", key="login_password")
+
+        if st.button("Connexion", key="login_button"):
+            uid, data = find_user_by_name(login_name)
+
+            if uid is None:
+                st.sidebar.error("Nom inconnu.")
+            else:
+                ok = users.authenticate(uid, login_password)
+                if ok:
+                    st.session_state.user_id = uid
+                    st.session_state.user_name = data["name"]
+                    st.sidebar.success("Connexion réussie.")
+                    st.rerun()
+                else:
+                    st.sidebar.error("Mot de passe incorrect.")
+
+    # --------------------------
+    # ➕ REGISTER
+    # --------------------------
+    with tab_register:
+        reg_name = st.text_input("Nom complet", key="reg_name")
+        reg_pass = st.text_input("Mot de passe", type="password", key="reg_pass")
+        reg_pass2 = st.text_input("Confirmer le mot de passe", type="password", key="reg_pass2")
+
+        if st.button("Créer le compte", key="register_button"):
+            if reg_name.strip() == "":
+                st.sidebar.error("Veuillez entrer un nom.")
+            elif reg_pass != reg_pass2:
+                st.sidebar.error("Les mots de passe ne correspondent pas.")
+            else:
+                new_id = users.create_user(reg_name, reg_pass, admin=False)
+                st.sidebar.success(f"Compte créé ! Votre ID : {new_id}")
+                st.sidebar.info("Vous pouvez maintenant vous connecter.")
 
 # ============================================================
-# 🏷️ EN-TÊTE
+# 🟩 SI CONNECTÉ → AFFICHER WELCOME
 # ============================================================
-st.markdown("---")
-st.markdown("<h1 style='text-align:center;'>🍟 Rond‑Point</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center;'>Friterie – Prise de commande</p>", unsafe_allow_html=True)
-st.markdown("---")
+if st.session_state.user_id:
 
-# Welcome
-if st.session_state.matricule:
+    st.markdown("---")
+    st.markdown("<h1 style='text-align:center;'>🍟 Rond‑Point</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;'>Friterie – Prise de commande</p>", unsafe_allow_html=True)
+    st.markdown("---")
+
     st.markdown(
         f"""
         <div style="background:#0d0d0d;padding:25px;border-radius:12px;text-align:center;
         color:#00ff88;border:2px solid #00ff88;box-shadow:0 0 12px rgba(0,255,136,0.25);margin-top:20px;">
             <h1 style="font-size:42px;margin:0;font-weight:900;letter-spacing:3px;">
-                ✈️ WELCOME {st.session_state.name.upper()}
+                ✈️ WELCOME {st.session_state.user_name.upper()}
             </h1>
             <p style="font-size:18px;margin-top:8px;color:#b6ffda;">
-                Matricule : <strong>{st.session_state.matricule}</strong>
+                ID : <strong>{st.session_state.user_id}</strong>
             </p>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-
 # ============================================================
-# 🔑 MODE ADMIN (SIDEBAR)
+# 🟥 BOUTON MODE ADMIN (BOBO SEULEMENT)
 # ============================================================
-ADMIN_PASSWORD = "OtSOtSOtS"
-
-if st.session_state.matricule == "0501583":
-
-    st.sidebar.markdown("### 🔧 Administration")
+if st.session_state.user_name == "Bobo" and st.session_state.user_id == "2641987":
 
     if not st.session_state.admin_mode:
-        pwd = st.sidebar.text_input("🔑 Admin password", type="password")
-        if pwd == ADMIN_PASSWORD:
+        if st.sidebar.button("🛠️ Activer mode admin", key="admin_on"):
             st.session_state.admin_mode = True
-            st.sidebar.success("🔑🔓 Mode admin activé")
             st.rerun()
-
     else:
-        st.sidebar.success("🔑🔓 Mode admin activé")
-
-        # RESET COMMANDES
-        if st.sidebar.button("♻️ Reset commandes"):
-            commandes.reset_command()
-            st.sidebar.success("Toutes les commandes ont été réinitialisées")
-
-        st.sidebar.markdown("---")
-
-        # ADD / MODIFY BURGER
-        st.sidebar.markdown("#### 🍔 Ajouter / Modifier un burger")
-
-        burger_to_modify = st.sidebar.selectbox(
-            "Burger à modifier",
-            [" "] + list(menu.Menu["Burger"].keys())
-        )
-
-        new_burger_name = st.sidebar.text_input("Nouveau nom (laisser vide pour garder le même)")
-        new_burger_price = st.sidebar.number_input("Nouveau prix", min_value=0.0, step=0.01)
-
-        colA, colB = st.sidebar.columns(2)
-
-        with colA:
-            if st.sidebar.button("Ajouter"):
-                try:
-                    if new_burger_name.strip() == "":
-                        st.sidebar.error("Veuillez entrer un nom pour le nouveau burger.")
-                    else:
-                        menu.add_burger(new_burger_name, new_burger_price)
-                        st.sidebar.success("Burger ajouté.")
-                except Exception as e:
-                    st.sidebar.error(f"Erreur : {e}")
-
-        with colB:
-            if st.sidebar.button("Modifier"):
-                try:
-                    if burger_to_modify.strip() == " ":
-                        st.sidebar.error("Sélectionnez un burger à modifier.")
-                    else:
-                        final_name = new_burger_name if new_burger_name.strip() != "" else burger_to_modify
-                        menu.modify_burger(burger_to_modify, final_name, new_burger_price)
-                        st.sidebar.success("Burger modifié.")
-                except Exception as e:
-                    st.sidebar.error(f"Erreur : {e}")
-
-        st.sidebar.markdown("---")
-
-        # DELETE BURGER
-        st.sidebar.markdown("#### ❌ Supprimer un burger")
-
-        burger_to_delete = st.sidebar.selectbox(
-            "Burger à supprimer",
-            [" "] + list(menu.Menu["Burger"].keys()),
-            key="del_burger_select"
-        )
-
-        if st.sidebar.button("Supprimer burger", key="del_burger_btn"):
-            try:
-                if burger_to_delete.strip() == " ":
-                    st.sidebar.error("Sélectionnez un burger à supprimer.")
-                else:
-                    menu.del_burger(burger_to_delete)
-                    st.sidebar.success(f"Burger '{burger_to_delete}' supprimé.")
-            except Exception as e:
-                st.sidebar.error(f"Erreur : {e}")
-
-        st.sidebar.markdown("---")
-
-        # ADD SAUCE
-        st.sidebar.markdown("#### 🥫 Ajouter une sauce")
-        sauce_name = st.sidebar.text_input("Nom de la sauce")
-        if st.sidebar.button("Ajouter sauce"):
-            try:
-                menu.add_sauce(sauce_name)
-                st.sidebar.success("Sauce ajoutée")
-            except Exception as e:
-                st.sidebar.error(f"Erreur : {e}")
-
-        st.sidebar.markdown("---")
-
-        # ADD SUPPLEMENT
-        st.sidebar.markdown("#### ➕ Ajouter un supplément")
-        supp_name = st.sidebar.text_input("Nom du supplément")
-        supp_price = st.sidebar.number_input("Prix du supplément", min_value=0.0, step=0.01)
-
-        if st.sidebar.button("Ajouter supplément"):
-            try:
-                menu.add_supp(supp_name, supp_price)
-                st.sidebar.success("Supplément ajouté")
-            except Exception as e:
-                st.sidebar.error(f"Erreur : {e}")
-
-        st.sidebar.markdown("---")
-
-        # ============================================================
-        # 👥 GESTION DES UTILISATEURS (ADD / MODIFY / DELETE)
-        # ============================================================
-
-        st.sidebar.markdown("### 👥 Gestion des utilisateurs")
-
-        # --- Ajouter un utilisateur ---
-        st.sidebar.markdown("#### ➕ Ajouter un utilisateur")
-
-        new_user_matricule = st.sidebar.text_input("Matricule (7 chiffres)", key="add_user_mat")
-        new_user_name = st.sidebar.text_input("Nom complet", key="add_user_name")
-
-        if st.sidebar.button("Ajouter utilisateur"):
-            try:
-                if not new_user_matricule.isdigit() or len(new_user_matricule) != 7:
-                    st.sidebar.error("Le matricule doit contenir 7 chiffres.")
-                elif new_user_name.strip() == "":
-                    st.sidebar.error("Veuillez entrer un nom.")
-                else:
-                    users.add_user(new_user_matricule, new_user_name)
-                    st.sidebar.success(f"Utilisateur {new_user_name} ajouté.")
-            except Exception as e:
-                st.sidebar.error(f"Erreur : {e}")
-
-        # --- Modifier un utilisateur ---
-        st.sidebar.markdown("#### ✏️ Modifier un utilisateur")
-
-        user_to_modify = st.sidebar.selectbox(
-            "Utilisateur à modifier",
-            [" "] + list(users.Users.keys()),
-            key="modify_user_select"
-        )
-
-        new_name_mod = st.sidebar.text_input("Nouveau nom", key="modify_user_name")
-
-        if st.sidebar.button("Modifier utilisateur"):
-            try:
-                if user_to_modify.strip() == " ":
-                    st.sidebar.error("Sélectionnez un utilisateur.")
-                elif new_name_mod.strip() == "":
-                    st.sidebar.error("Veuillez entrer un nouveau nom.")
-                else:
-                    users.modify_user(user_to_modify, new_name_mod)
-                    st.sidebar.success("Utilisateur modifié.")
-            except Exception as e:
-                st.sidebar.error(f"Erreur : {e}")
-
-        # --- Supprimer un utilisateur ---
-        st.sidebar.markdown("#### ❌ Supprimer un utilisateur")
-
-        user_to_delete = st.sidebar.selectbox(
-            "Utilisateur à supprimer",
-            [" "] + list(users.Users.keys()),
-            key="delete_user_select"
-        )
-
-        if st.sidebar.button("Supprimer utilisateur"):
-            try:
-                if user_to_delete.strip() == " ":
-                    st.sidebar.error("Sélectionnez un utilisateur.")
-                else:
-                    users.del_user(user_to_delete)
-                    st.sidebar.success("Utilisateur supprimé.")
-            except Exception as e:
-                st.sidebar.error(f"Erreur : {e}")
-
-        st.sidebar.markdown("---")
-
-        if st.sidebar.button("Déconnexion"):
+        st.sidebar.success("Mode admin activé ✔")
+        if st.sidebar.button("❌ Quitter mode admin", key="admin_off"):
             st.session_state.admin_mode = False
             st.rerun()
 
 # ============================================================
-# 🎛️ MENU CLIENT
+# 🟦 SIDEBAR ADMIN
 # ============================================================
-action = None
+if st.session_state.admin_mode:
 
-if st.session_state.matricule and not st.session_state.admin_mode:
+    st.sidebar.title("🛠️ Administration")
+
+    # RESET COMMANDES
+    if st.sidebar.button("♻️ Reset commandes", key="reset_cmd"):
+        commandes.reset_command()
+        st.sidebar.success("Toutes les commandes ont été réinitialisées.")
+
+    st.sidebar.markdown("---")
+
+    # LISTE USERS
+    st.sidebar.subheader("👥 Utilisateurs")
+    all_users = users.users_list()
+
+    # --- Ajouter un utilisateur ---
+    st.sidebar.markdown("### ➕ Ajouter un utilisateur")
+    new_name = st.sidebar.text_input("Nom", key="admin_add_name")
+    new_pass = st.sidebar.text_input("Mot de passe", type="password", key="admin_add_pass")
+
+    if st.sidebar.button("Créer utilisateur", key="admin_add_button"):
+        if new_name.strip() == "":
+            st.sidebar.error("Nom invalide.")
+        else:
+            new_id = users.create_user(new_name, new_pass, admin=False)
+            st.sidebar.success(f"Utilisateur créé : {new_name} — ID : {new_id}")
+
+    st.sidebar.markdown("---")
+
+    # --- Modifier un utilisateur ---
+    st.sidebar.markdown("### ✏️ Modifier un utilisateur")
+
+    user_names = [data["name"] for data in all_users.values()]
+    user_to_mod = st.sidebar.selectbox("Utilisateur", [" "] + user_names, key="admin_mod_select")
+
+    if user_to_mod.strip() != " ":
+        uid, data = find_user_by_name(user_to_mod)
+
+        new_name_mod = st.sidebar.text_input("Nouveau nom", key="admin_mod_name")
+        new_pass_mod = st.sidebar.text_input("Nouveau mot de passe", type="password", key="admin_mod_pass")
+
+        if st.sidebar.button("Modifier", key="admin_mod_button"):
+            ok = users.modify_user(uid, new_name=new_name_mod if new_name_mod else None,
+                                        new_password=new_pass_mod if new_pass_mod else None)
+            if ok:
+                st.sidebar.success("Utilisateur modifié.")
+            else:
+                st.sidebar.error("Impossible de modifier cet utilisateur.")
+
+    st.sidebar.markdown("---")
+
+    # --- Supprimer un utilisateur ---
+    st.sidebar.markdown("### ❌ Supprimer un utilisateur")
+
+    user_to_del = st.sidebar.selectbox("Utilisateur", [" "] + user_names, key="admin_del_select")
+
+    if st.sidebar.button("Supprimer", key="admin_del_button"):
+        uid, _ = find_user_by_name(user_to_del)
+        ok = users.delete_user(uid)
+        if ok:
+            st.sidebar.success("Utilisateur supprimé.")
+        else:
+            st.sidebar.error("Impossible de supprimer cet utilisateur.")
+
+    st.sidebar.markdown("---")
+
+    if st.sidebar.button("Déconnexion", key="admin_logout"):
+        st.session_state.user_id = None
+        st.session_state.user_name = None
+        st.session_state.admin_mode = False
+        st.rerun()
+
+# ============================================================
+# 🟩 SIDEBAR CLIENT (SI PAS ADMIN)
+# ============================================================
+if st.session_state.user_id and not st.session_state.admin_mode:
+
+    st.sidebar.title("📦 Commandes")
+
     action = st.sidebar.selectbox(
-        "📦 Gestion de la commande",
+        "Gestion",
         [" ", "Nouvelle commande", "Modifier commande", "Supprimer commande",
-         "Afficher ticket", "Afficher la commande totale", "Afficher toutes les commandes"]
+         "Afficher ticket", "Afficher la commande totale", "Afficher toutes les commandes"],
+        key="client_action"
     )
 
+    # Changer mot de passe
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("🔐 Changer mot de passe")
+
+    old = st.sidebar.text_input("Ancien mot de passe", type="password", key="client_old_pass")
+    new = st.sidebar.text_input("Nouveau mot de passe", type="password", key="client_new_pass")
+    new2 = st.sidebar.text_input("Confirmer", type="password", key="client_new_pass2")
+
+    if st.sidebar.button("Changer mot de passe", key="client_change_pass"):
+        if new != new2:
+            st.sidebar.error("Les mots de passe ne correspondent pas.")
+        else:
+            ok = users.change_password(st.session_state.user_id, old, new)
+            if ok:
+                st.sidebar.success("Mot de passe changé.")
+            else:
+                st.sidebar.error("Erreur : ancien mot de passe incorrect.")
+
+    st.sidebar.markdown("---")
+
+    if st.sidebar.button("Déconnexion", key="client_logout"):
+        st.session_state.user_id = None
+        st.session_state.user_name = None
+        st.rerun()
 
 # ============================================================
-# 🧑‍🍳 ESPACE CLIENT
+# 🟩 ESPACE CLIENT (COMMANDES)
 # ============================================================
-if st.session_state.matricule and not st.session_state.admin_mode and action.strip():
+if st.session_state.user_id and not st.session_state.admin_mode:
 
-    name = st.session_state.matricule
+    uid = st.session_state.user_id
     ui.inject_css()
 
     # --------------------------------------------------------
     # 🟢 NOUVELLE COMMANDE
     # --------------------------------------------------------
     if action == "Nouvelle commande":
-
         st.header("🧾 Nouvelle commande")
 
-        # Initialisation du panier
         if "panier" not in st.session_state:
             st.session_state.panier = []
 
-        # Affichage des erreurs de supplément
         if "erreur_supp" in st.session_state:
             st.error(st.session_state["erreur_supp"])
             del st.session_state["erreur_supp"]
 
-        # Bouton simple
         def bouton_ajout_simple(nom, prix):
             if ui.bouton(f"{nom} — {prix:.2f} €", key=f"btn_{nom}"):
                 st.session_state.panier.append(nom)
                 st.rerun()
 
-        # Bouton intelligent pour suppléments
         def bouton_ajout_supp(nom, prix):
             if ui.bouton(f"{nom} — {prix:.2f} €", key=f"supp_{nom}"):
 
                 panier = st.session_state.panier
 
-                # Trouver le dernier burger
                 last_burger = None
                 for i in range(len(panier) - 1, -1, -1):
                     if panier[i] in menu.Menu["Burger"]:
@@ -303,7 +282,6 @@ if st.session_state.matricule and not st.session_state.admin_mode and action.str
                     st.session_state["erreur_supp"] = "❌ Ajoutez d'abord un burger avant un supplément."
                     st.rerun()
 
-                # Vérifier doublon
                 supps = []
                 for x in panier[last_burger + 1:]:
                     if x in menu.Menu["Supplément"]:
@@ -319,7 +297,8 @@ if st.session_state.matricule and not st.session_state.admin_mode and action.str
                 st.rerun()
 
         choix = st.radio("Choisir une catégorie",
-                         ["🍔 Burger + Suppléments", "🍟 Frites", "🥫 Sauces"])
+                         ["🍔 Burger + Suppléments", "🍟 Frites", "🥫 Sauces"],
+                         key="radio_categorie")
 
         if choix == "🍔 Burger + Suppléments":
             st.subheader("🍔 Burgers")
@@ -345,8 +324,8 @@ if st.session_state.matricule and not st.session_state.admin_mode and action.str
             for item in st.session_state.panier:
                 st.write(f"- {item}")
 
-            if ui.bouton("✅ Valider la commande", key="valider"):
-                commandes.add_command(name, st.session_state.panier)
+            if ui.bouton("✅ Valider la commande", key="valider_cmd"):
+                commandes.add_command(uid, st.session_state.panier)
                 st.success("Commande envoyée !")
                 st.session_state.panier = []
                 st.rerun()
@@ -355,32 +334,30 @@ if st.session_state.matricule and not st.session_state.admin_mode and action.str
     # ✏️ MODIFIER COMMANDE
     # --------------------------------------------------------
     if action == "Modifier commande":
-
         st.header("✏️ Modifier la commande")
 
-        if name not in commandes.commandes or not commandes.commandes[name]:
+        if uid not in commandes.commandes or not commandes.commandes[uid]:
             st.info("Aucune commande à modifier.")
         else:
-            panier = commandes.commandes[name]
+            panier = commandes.commandes[uid]
 
             st.subheader("🔄 Modifier quantité / supprimer un article")
 
-            item = st.selectbox("Article", list(set(panier)))
-            qty = st.number_input("Nouvelle quantité", min_value=0, value=1)
+            item = st.selectbox("Article", list(set(panier)), key="mod_item")
+            qty = st.number_input("Nouvelle quantité", min_value=0, value=1, key="mod_qty")
 
-            if ui.bouton("Modifier quantité"):
-                commandes.modify_command(name, item, qty)
+            if ui.bouton("Modifier quantité", key="mod_qty_btn"):
+                commandes.modify_command(uid, item, qty)
                 st.success("Quantité modifiée.")
                 st.rerun()
 
-            if ui.bouton("Supprimer cet article"):
-                logic.supprimer_item(name, item)
+            if ui.bouton("Supprimer cet article", key="mod_del_btn"):
+                logic.supprimer_item(uid, item)
                 st.success("Article supprimé.")
                 st.rerun()
 
             st.markdown("---")
 
-            # Modifier burger + suppléments
             st.subheader("🍔 Modifier un burger + ses suppléments")
 
             burgers = []
@@ -402,7 +379,8 @@ if st.session_state.matricule and not st.session_state.admin_mode and action.str
             else:
                 choix_b = st.selectbox(
                     "Choisir le burger",
-                    [f"{b[1]} (suppléments : {', '.join(b[2]) if b[2] else 'aucun'})" for b in burgers]
+                    [f"{b[1]} (suppléments : {', '.join(b[2]) if b[2] else 'aucun'})" for b in burgers],
+                    key="mod_burger_select"
                 )
 
                 idx = [f"{b[1]} (suppléments : {', '.join(b[2]) if b[2] else 'aucun'})"
@@ -410,16 +388,16 @@ if st.session_state.matricule and not st.session_state.admin_mode and action.str
 
                 pos, old_burger, old_supps = burgers[idx]
 
-                new_burger = st.selectbox("Nouveau burger", list(menu.Menu["Burger"].keys()))
+                new_burger = st.selectbox("Nouveau burger", list(menu.Menu["Burger"].keys()), key="mod_new_burger")
 
                 st.write("### ➕ Modifier les suppléments")
                 new_supps = []
                 for s in menu.Menu["Supplément"]:
-                    if st.checkbox(s, value=(s in old_supps)):
+                    if st.checkbox(s, value=(s in old_supps), key=f"mod_supp_{s}"):
                         new_supps.append(s)
 
-                if ui.bouton("💾 Enregistrer"):
-                    logic.modifier_burger_supps(name, old_burger, old_supps, new_burger, new_supps)
+                if ui.bouton("💾 Enregistrer", key="mod_save_btn"):
+                    logic.modifier_burger_supps(uid, old_burger, old_supps, new_burger, new_supps)
                     st.success("Burger modifié.")
                     st.rerun()
 
@@ -429,11 +407,11 @@ if st.session_state.matricule and not st.session_state.admin_mode and action.str
     if action == "Supprimer commande":
         st.header("🗑️ Supprimer la commande")
 
-        if name not in commandes.commandes or not commandes.commandes[name]:
+        if uid not in commandes.commandes or not commandes.commandes[uid]:
             st.info("Aucune commande à supprimer.")
         else:
-            if ui.bouton("❌ Supprimer toute la commande"):
-                commandes.delete_command(name)
+            if ui.bouton("❌ Supprimer toute la commande", key="del_all_cmd"):
+                commandes.delete_command(uid)
                 st.success("Commande supprimée.")
                 st.rerun()
 
@@ -443,10 +421,10 @@ if st.session_state.matricule and not st.session_state.admin_mode and action.str
     if action == "Afficher ticket":
         st.header("🧾 Ticket de caisse")
 
-        if name not in commandes.commandes or not commandes.commandes[name]:
+        if uid not in commandes.commandes or not commandes.commandes[uid]:
             st.info("Aucune commande.")
         else:
-            ticket = logic.generer_ticket(name)
+            ticket = logic.generer_ticket(uid)
             df = pd.DataFrame(ticket["items"])
             ui.tableau(df)
             st.markdown(f"### 💰 Total : **{ticket['total']} €**")
@@ -464,39 +442,38 @@ if st.session_state.matricule and not st.session_state.admin_mode and action.str
             df = pd.DataFrame(recap)
             ui.tableau(df)
 
+    # --------------------------------------------------------
+    # 🧾 AFFICHER TOUTES LES COMMANDES
+    # --------------------------------------------------------
+    if action == "Afficher toutes les commandes":
+
+        ui.inject_css()
+        st.header("🧾 Toutes les commandes")
+
+        if not commandes.commandes:
+            st.info("Aucune commande enregistrée.")
+        else:
+            total_global = 0
+            all_users = users.users_list()
+
+            for uid, liste in commandes.commandes.items():
+
+                nom = all_users.get(uid, {}).get("name", "Inconnu")
+                st.markdown(f"## 👤 {nom} ({uid})")
+
+                ticket = logic.generer_ticket(uid)
+                df = pd.DataFrame(ticket["items"])
+                ui.tableau(df)
+
+                st.markdown(f"### 💰 Total : **{ticket['total']} €**")
+                total_global += float(ticket["total"])
+
+                st.markdown("---")
+
+            st.markdown(f"# 🧮 Total général : **{total_global:.2f} €**")
 
 # ============================================================
-# 🧾 AFFICHER TOUTES LES COMMANDES
-# ============================================================
-if action == "Afficher toutes les commandes":
-
-    ui.inject_css()
-    st.header("🧾 Toutes les commandes")
-
-    if not commandes.commandes:
-        st.info("Aucune commande enregistrée.")
-    else:
-        total_global = 0
-
-        for matricule, liste in commandes.commandes.items():
-
-            nom = users.Users.get(matricule, "Inconnu")
-            st.markdown(f"## 👤 {nom} ({matricule})")
-
-            ticket = logic.generer_ticket(matricule)
-            df = pd.DataFrame(ticket["items"])
-            ui.tableau(df)
-
-            st.markdown(f"### 💰 Total : **{ticket['total']} €**")
-            total_global += float(ticket["total"])
-
-            st.markdown("---")
-
-        st.markdown(f"# 🧮 Total général : **{total_global:.2f} €**")
-
-
-# ============================================================
-# 📋 MENU (AFFICHAGE GLOBAL)
+# 📋 MENU (AFFICHAGE GLOBAL — TOUJOURS VISIBLE)
 # ============================================================
 st.header("📋 Menu")
 ui.inject_css()

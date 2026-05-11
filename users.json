@@ -1,5 +1,7 @@
 {
-  "0501583": "Bobo",
-  "0000001": "test1",
-  "0000002": "test2"
+    "2641987": {
+        "name": "Bobo",
+        "password": "Fl0t$T!s",
+        "admin": true
+    }
 }
