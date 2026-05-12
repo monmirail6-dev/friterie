@@ -150,16 +150,16 @@ if st.session_state.admin_mode:
     all_users = users.users_list()
 
     # --- Ajouter un utilisateur ---
-    st.sidebar.markdown("### ➕ Ajouter un utilisateur")
-    new_name = st.sidebar.text_input("Nom", key="admin_add_name")
-    new_pass = st.sidebar.text_input("Mot de passe", type="password", key="admin_add_pass")
+    with st.sidebar.expander("### ➕ Ajouter un utilisateur", expanded=False):
+        new_name = st.sidebar.text_input("Nom", key="admin_add_name")
+        new_pass = st.sidebar.text_input("Mot de passe", type="password", key="admin_add_pass")
 
-    if st.sidebar.button("Créer utilisateur", key="admin_add_button"):
-        if new_name.strip() == "":
-            st.sidebar.error("Nom invalide.")
-        else:
-            new_id = users.create_user(new_name, new_pass, admin=False)
-            st.sidebar.success(f"Utilisateur créé : {new_name} — ID : {new_id}")
+        if st.sidebar.button("Créer utilisateur", key="admin_add_button"):
+            if new_name.strip() == "":
+                st.sidebar.error("Nom invalide.")
+            else:
+                new_id = users.create_user(new_name, new_pass, admin=False)
+                st.sidebar.success(f"Utilisateur créé : {new_name} — ID : {new_id}")
 
     st.sidebar.markdown("---")
 
