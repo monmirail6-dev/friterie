@@ -38,6 +38,12 @@ def add_supp(name, price):
     Menu["Suppléments"][name] = price
     save_menu()
 
+def add_viande(name, price):
+    if price <= 0:
+        raise ValueError("Le prix doit être positif")
+    Menu["Viandes"][name] = price
+    save_menu()
+
 def modify_burger(old_name, new_name, new_price):
     if old_name not in Menu["Burgers"]:
         raise ValueError(f"Le burger '{old_name}' n'existe pas.")
