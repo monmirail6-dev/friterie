@@ -111,11 +111,12 @@ if st.session_state.user_id:
                     gap:25px;
                 ">
 
-                <!-- LOGO À GAUCHE -->
-                <img src="logo.png style="width:70px; height:auto;" />
                 
-                <!-- TEXTE À DROITE -->
-                <div>
+                    <!-- LOGO À GAUCHE -->
+                        <img src="logo.png" style="width:70px; height:auto;" />
+
+                    <!-- TEXTE À DROITE -->
+                        <div>
                     <h1 style="
                         font-size:42px;
                         margin:0;
