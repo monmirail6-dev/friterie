@@ -154,7 +154,7 @@ if st.session_state.admin_mode:
         new_name = st.text_input("Nom", key="admin_add_name")
         new_pass = st.text_input("Mot de passe", type="password", key="admin_add_pass")
 
-        if st.sidebar.button("Créer utilisateur", key="admin_add_button"):
+        if st.button("Créer utilisateur", key="admin_add_button"):
             if new_name.strip() == "":
                 st.sidebar.error("Nom invalide.")
             else:
