@@ -231,7 +231,12 @@ if st.session_state.admin_mode:
             else:
                 menu.add_supp(new_supp, supp_price)
                 st.success(f"✅ Supplément « {new_supp} » ajouté.")
-    st.sidebar.markdown("---")    
+    
+    st.sidebar.markdown("---")
+    
+    with.st.sidebar.expander("✏️ Modifier un item", expanded=False):
+        # --- modifier un burger---
+        old_burger = st.selectbox("Burgers", [" "] +
     
     if st.sidebar.button("Déconnexion", key="admin_logout"):
         st.session_state.user_id = None
