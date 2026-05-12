@@ -250,17 +250,17 @@ if st.session_state.admin_mode:
             value=default_price
         )
 
-    if st.button("Modifier burger", key="admin_mod_burger"):
+        if st.button("Modifier burger", key="admin_mod_burger"):
 
-        if not burger_to_mod.strip():
-            st.error("Sélectionnez un burger à modifier")
-        else:
-            final_name = new_name_burger.strip() if new_name_burger.strip() != "" else burger_to_mod
-            menu.modify_burger(burger_to_mod, final_name, new_price_burger)
-            st.success(f"✅Burger « {burger_to_mod} » modifié.")
+            if not burger_to_mod.strip():
+                st.error("Sélectionnez un burger à modifier")
+            else:
+                final_name = new_name_burger.strip() if new_name_burger.strip() != "" else burger_to_mod
+                menu.modify_burger(burger_to_mod, final_name, new_price_burger)
+                st.success(f"✅Burger « {burger_to_mod} » modifié.")
 
     
-    st.sidebar.markdown("---")
+        st.sidebar.markdown("---")
     
     if st.sidebar.button("Déconnexion", key="admin_logout"):
         st.session_state.user_id = None
