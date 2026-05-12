@@ -195,11 +195,11 @@ if st.session_state.admin_mode:
                 st.error("Impossible de supprimer cet utilisateur.")
 
     st.sidebar.markdown("---")        
-    # --- ajouter burger ---
-    with st.sidebar.expander("➕ Ajouter un burger", expanded=False):
+    
+    with st.sidebar.expander("➕ Ajouter un item", expanded=False):
+        # --- ajouter burger ---
         new_burger = st.text_input("Nouveau burger", key="new_burger")
         price = st.number_input("Prix", min_value=0.01, step=0.01, key="new_price")
-
         if st.button("Ajouter le burger", key="admin_add_burger"):
             if not new_burger.strip():
                 st.error("Nom invalide.")
@@ -208,6 +208,19 @@ if st.session_state.admin_mode:
             else:
                 menu.add_burger(new_burger, price)
                 st.success(f"✅ Burger « {new_burger} » ajouté.")
+
+        st.sidebar.markdown("---")
+        # --- ajouter sauce ---
+        new_sauce = st.text_input("Nouvelle sauce", key="new_sauce")
+        if st.button("Ajouter la sauce", key="admin_add_sauce"):
+            if not new_sauce.strip():
+                st.error("Nom invalide")
+            elif new_sauce in menu.Menu["Sauces"]:
+                st.error("cette sauce existe déjà.")
+            else:
+                menu.add_sauce(new_sauce)
+                st.success(f"✅ Sauce « {new_sauce} » ajouté.")
+        st.sidebar.markdown("---")
                 
     st.sidebar.markdown("---")    
     
