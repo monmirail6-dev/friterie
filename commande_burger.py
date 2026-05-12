@@ -203,13 +203,19 @@ if st.session_state.admin_mode:
         st.rerun()
         
     # --- ajouter burger ---
-    with st.sidebar.expander("➕ ajouter Burger", expanded=False):
-        new_burger = st.text_input("nouveau burger", key="new_burger")
-        price = st.number_input("prix", min_value=0, step=0.01, key="new_price")
-        if st.button("ajouter un burger", key="admin_add_burger"):
-            if new_burger in Menu["burgers"]:
-                raise ValueError("le Burger est déjà dans la liste")
-            menu.add_burger(new_burger, price)
+    with st.sidebar.expander("➕ Ajouter un burger", expanded=False):
+        new_burger = st.text_input("Nouveau burger", key="new_burger")
+        price = st.number_input("Prix", min_value=0.01, step=0.01, key="new_price")
+
+        if st.button("Ajouter le burger", key="admin_add_burger"):
+            if not new_burger.strip():
+                st.error("Nom invalide.")
+            elif new_burger in menu.Menu["Burgers"]:
+                st.error("Ce burger existe déjà.")
+            else:
+                menu.add_burger(new_burger, price)
+                st.success(f"✅ Burger « {new_burger} » ajouté.")
+
             
             
 # ============================================================
