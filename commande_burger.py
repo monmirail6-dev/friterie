@@ -199,17 +199,16 @@ if st.session_state.admin_mode:
     with st.sidebar.expander("➕ Ajouter un item", expanded=False):
         # --- ajouter burger ---
         new_burger = st.text_input("Nouveau burger", key="new_burger")
-        price = st.number_input("Prix", min_value=0.01, step=0.01, key="new_price")
+        burger_price = st.number_input("Prix", min_value=0.01, step=0.01, key="new_burger_price")
         if st.button("Ajouter le burger", key="admin_add_burger"):
             if not new_burger.strip():
                 st.error("Nom invalide.")
             elif new_burger in menu.Menu["Burgers"]:
                 st.error("Ce burger existe déjà.")
             else:
-                menu.add_burger(new_burger, price)
+                menu.add_burger(new_burger, burger_price)
                 st.success(f"✅ Burger « {new_burger} » ajouté.")
 
-            st.sidebar.markdown("---")
         # --- ajouter sauce ---
         new_sauce = st.text_input("Nouvelle sauce", key="new_sauce")
         if st.button("Ajouter la sauce", key="admin_add_sauce"):
@@ -220,8 +219,18 @@ if st.session_state.admin_mode:
             else:
                 menu.add_sauce(new_sauce)
                 st.success(f"✅ Sauce « {new_sauce} » ajouté.")
-            st.sidebar.markdown("---")
                 
+        # --- ajouter supplément --- 
+        new_supp = st.text_input("Nouveau supplément", key="new_supp")
+        supp_price = st.number_input("Prix", min_value=0.01, step=0.01, key="new_supp_price")
+        if st.button("Ajouter le supplément", key="admin_add_supp"):
+            if not new_supp.strip():
+                st.error("Nom invalide.")
+            elif new_supp in menu.Menu["Suppléments"]:
+                st.error("Ce supplément existe déjà.")
+            else:
+                menu.add_supp(new_supp, supp_price)
+                st.success(f"✅ Supplément « {new_supp} » ajouté.")
     st.sidebar.markdown("---")    
     
     if st.sidebar.button("Déconnexion", key="admin_logout"):
