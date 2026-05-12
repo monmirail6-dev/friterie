@@ -24,17 +24,17 @@ def regrouper_burger_supps(panier):
         # --------------------------
         # 🍔 BURGER
         # --------------------------
-        if item in menu.Menu["Burger"]:
-            prix_burger = menu.Menu["Burger"][item]
+        if item in menu.Menu["burgers"]:
+            prix_burger = menu.Menu["burgers"][item]
             supplements = []
             j = i + 1
 
             # Récupérer les suppléments associés
-            while j < len(panier) and panier[j] in menu.Menu["Supplément"]:
+            while j < len(panier) and panier[j] in menu.Menu["Suppléments"]:
                 supplements.append(panier[j])
                 j += 1
 
-            prix_supp = sum(menu.Menu["Supplément"][s] for s in supplements)
+            prix_supp = sum(menu.Menu["Suppléments"][s] for s in supplements)
             prix_total = prix_burger + prix_supp
 
             label = item
@@ -145,9 +145,9 @@ def supprimer_item(matricule, item):
     i = indices[0]
 
     # Si burger → supprimer aussi les suppléments
-    if item in menu.Menu["Burger"]:
+    if item in menu.Menu["burgers"]:
         j = i + 1
-        while j < len(panier) and panier[j] in menu.Menu["Supplément"]:
+        while j < len(panier) and panier[j] in menu.Menu["Suppléments"]:
             j += 1
         del panier[i:j]
     else:
