@@ -156,12 +156,12 @@ if st.session_state.admin_mode:
 
         if st.button("Créer utilisateur", key="admin_add_button"):
             if new_name.strip() == "":
-                st.sidebar.error("Nom invalide.")
+                st.error("Nom invalide.")
             else:
                 new_id = users.create_user(new_name, new_pass, admin=False)
-                st.sidebar.success(f"Utilisateur créé : {new_name} — ID : {new_id}")
+                st.success(f"Utilisateur créé : {new_name} — ID : {new_id}")
 
-        st.sidebar.markdown("---")
+    st.sidebar.markdown("---")
 
     # --- Modifier un utilisateur ---
     st.sidebar.markdown("### ✏️ Modifier un utilisateur")
