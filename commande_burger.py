@@ -236,7 +236,7 @@ if st.session_state.admin_mode:
         
          # --- ajouter viande --- 
         new_viande = st.text_input("Nouvelle viande", key="new_viande")
-        viande_price = st.numer_input("Prix", min_value=0.01, step=0.01, key="viande_price")
+        viande_price = st.number_input("Prix", min_value=0.01, step=0.01, key="viande_price")
         if st.button("Ajouter viande", key="admin_add_viande"):
             if not new_viande.strip():
                 st.error("Nom invalide.")
