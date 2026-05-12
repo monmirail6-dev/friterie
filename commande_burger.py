@@ -278,7 +278,7 @@ if st.session_state.user_id and not st.session_state.admin_mode:
 
                 last_burger = None
                 for i in range(len(panier) - 1, -1, -1):
-                    if panier[i] in menu.Menu["Burger"]:
+                    if panier[i] in menu.Menu["Burgers"]:
                         last_burger = i
                         break
                     if panier[i] in menu.Menu["Frites"] or panier[i] in menu.Menu["Sauces"]:
@@ -290,7 +290,7 @@ if st.session_state.user_id and not st.session_state.admin_mode:
 
                 supps = []
                 for x in panier[last_burger + 1:]:
-                    if x in menu.Menu["Supplément"]:
+                    if x in menu.Menu["Suppléments"]:
                         supps.append(x)
                     else:
                         break
@@ -308,10 +308,10 @@ if st.session_state.user_id and not st.session_state.admin_mode:
 
         if choix == "🍔 Burger + Suppléments":
             st.subheader("🍔 Burgers")
-            ui.colonnes(menu.Menu["Burger"], bouton_ajout_simple)
+            ui.colonnes(menu.Menu["Burgers"], bouton_ajout_simple)
 
             st.subheader("➕ Suppléments")
-            ui.colonnes(menu.Menu["Supplément"], bouton_ajout_supp)
+            ui.colonnes(menu.Menu["Suppléments"], bouton_ajout_supp)
 
         if choix == "🍟 Frites":
             st.subheader("🍟 Frites")
@@ -369,10 +369,10 @@ if st.session_state.user_id and not st.session_state.admin_mode:
             burgers = []
             i = 0
             while i < len(panier):
-                if panier[i] in menu.Menu["Burger"]:
+                if panier[i] in menu.Menu["Burgers"]:
                     supps = []
                     j = i + 1
-                    while j < len(panier) and panier[j] in menu.Menu["Supplément"]:
+                    while j < len(panier) and panier[j] in menu.Menu["Suppléments"]:
                         supps.append(panier[j])
                         j += 1
                     burgers.append((i, panier[i], supps))
@@ -394,11 +394,11 @@ if st.session_state.user_id and not st.session_state.admin_mode:
 
                 pos, old_burger, old_supps = burgers[idx]
 
-                new_burger = st.selectbox("Nouveau burger", list(menu.Menu["Burger"].keys()), key="mod_new_burger")
+                new_burger = st.selectbox("Nouveau burger", list(menu.Menu["Burgers"].keys()), key="mod_new_burger")
 
                 st.write("### ➕ Modifier les suppléments")
                 new_supps = []
-                for s in menu.Menu["Supplément"]:
+                for s in menu.Menu["Suppléments"]:
                     if st.checkbox(s, value=(s in old_supps), key=f"mod_supp_{s}"):
                         new_supps.append(s)
 
