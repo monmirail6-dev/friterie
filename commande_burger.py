@@ -240,7 +240,7 @@ if st.session_state.admin_mode:
         if st.button("Ajouter viande", key="admin_add_viande"):
             if not new_viande.strip():
                 st.error("Nom invalide.")
-            elif new_viande in menu.Menu["Viandes"]:
+            elif new_viande in menu.Menu.get("Viandes", {}):
                 st.error("Cette viande existe déjà.")
             else:
                 menu.add_viande(new_viande, viande_price)
