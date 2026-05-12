@@ -5,7 +5,7 @@ import commandes
 import ui
 import logic
 import pandas as pd
-import base64
+
 
 # Toujours définir action pour éviter les NameError
 action = None
