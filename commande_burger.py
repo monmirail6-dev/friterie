@@ -231,13 +231,11 @@ if st.session_state.admin_mode:
             else:
                 menu.add_supp(new_supp, supp_price)
                 st.success(f"✅ Supplément « {new_supp} » ajouté.")
-    with st.sidebar.expander("✏️ Modifier Items", expanded=False):
-
+    # --- modifier burger ---            
+    with st.sidebar.expander("✏️ Modifier Burger", expanded=False):
         burgers_name = list(menu.Menu.get("Burgers", {}).keys())
         burger_to_mod = st.selectbox("burger à modifier", burgers_name)
-
         default_price = menu.Menu["Burgers"][burger_to_mod]
-
         new_name_burger = st.text_input(
             "Modifier nom, vide -> pas de modif",
             key="new_name_burger"
@@ -258,6 +256,7 @@ if st.session_state.admin_mode:
                 final_name = new_name_burger.strip() if new_name_burger.strip() != "" else burger_to_mod
                 menu.modify_burger(burger_to_mod, final_name, new_price_burger)
                 st.success(f"✅Burger « {burger_to_mod} » modifié.")
+        
 
     
         st.sidebar.markdown("---")
