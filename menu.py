@@ -22,7 +22,7 @@ Menu = load_menu()
 def add_burger(name, price):
     if price <= 0:
         raise ValueError("Le prix doit être positif")
-    Menu["Burger"][name] = price
+    Menu["Burgers"][name] = price
     save_menu()
 
 # Ajouter une sauce
@@ -35,11 +35,11 @@ def add_sauce(name):
 def add_supp(name, price):
     if price <= 0:
         raise ValueError("Le prix doit être positif")
-    Menu["Supplément"][name] = price
+    Menu["Suppléments"][name] = price
     save_menu()
 
 def modify_burger(old_name, new_name, new_price):
-    if old_name not in Menu["Burger"]:
+    if old_name not in Menu["Burgers"]:
         raise ValueError(f"Le burger '{old_name}' n'existe pas.")
     if new_price <= 0:
         raise ValueError("Le prix doit être positif.")
@@ -47,15 +47,15 @@ def modify_burger(old_name, new_name, new_price):
     # Si le nom change
     if new_name != old_name:
         # On supprime l'ancien
-        del Menu["Burger"][old_name]
+        del Menu["Burgers"][old_name]
         # On crée le nouveau
-        Menu["Burger"][new_name] = new_price
+        Menu["Burgers"][new_name] = new_price
     else:
         # On modifie juste le prix
-        Menu["Burger"][old_name] = new_price
+        Menu["Burgers"][old_name] = new_price
 
 def del_burger(name):
-    if name not in Menu["Burger"]:
+    if name not in Menu["Burgers"]:
         raise ValueError(f"Le burger '{name}' n'existe pas.")
-    del Menu["Burger"][name]
+    del Menu["Burgers"][name]
 
