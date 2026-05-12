@@ -146,8 +146,6 @@ if st.session_state.user_id:
             unsafe_allow_html=True
         )
 
-        st.markdown("</div>", unsafe_allow_html=True)
-``
 
 
 # ============================================================
