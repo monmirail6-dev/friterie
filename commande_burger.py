@@ -201,6 +201,9 @@ if st.session_state.admin_mode:
         st.session_state.user_name = None
         st.session_state.admin_mode = False
         st.rerun()
+        
+    # --- Ajouter Items ---
+
 
 # ============================================================
 # 🟩 SIDEBAR CLIENT (SI PAS ADMIN)
