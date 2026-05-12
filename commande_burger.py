@@ -203,7 +203,6 @@ if st.session_state.admin_mode:
         st.rerun()
         
     # --- ajouter burger ---
-    with st.sidebar.expander("➕ ajouter Burger", expanded=False):
 
             
             
