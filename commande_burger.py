@@ -204,10 +204,7 @@ if st.session_state.admin_mode:
         
     # --- ajouter burger ---
     with st.sidebar.expander("➕ ajouter Burger", expanded=False):
-        new_burger = st.text_input("nouveau burger", key="new_burger")
-        price = st.number_input("prix", min_value=0, step=0.01, key="new_price")
 
-        
             
             
 # ============================================================
