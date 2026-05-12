@@ -164,39 +164,39 @@ if st.session_state.admin_mode:
     st.sidebar.markdown("---")
 
     # --- Modifier un utilisateur ---
-    st.sidebar.markdown("### ✏️ Modifier un utilisateur")
+    with st.sidebar.expander("✏️ Modifier un utilisateur", expanded=False)
 
-    user_names = [data["name"] for data in all_users.values()]
-    user_to_mod = st.sidebar.selectbox("Utilisateur", [" "] + user_names, key="admin_mod_select")
+        user_names = [data["name"] for data in all_users.values()]
+        user_to_mod = st.selectbox("Utilisateur", [" "] + user_names, key="admin_mod_select")
 
-    if user_to_mod.strip() != " ":
-        uid, data = find_user_by_name(user_to_mod)
+        if user_to_mod.strip() != " ":
+            uid, data = find_user_by_name(user_to_mod)
 
-        new_name_mod = st.sidebar.text_input("Nouveau nom", key="admin_mod_name")
-        new_pass_mod = st.sidebar.text_input("Nouveau mot de passe", type="password", key="admin_mod_pass")
+            new_name_mod = st.text_input("Nouveau nom", key="admin_mod_name")
+            new_pass_mod = st.text_input("Nouveau mot de passe", type="password", key="admin_mod_pass")
 
-        if st.sidebar.button("Modifier", key="admin_mod_button"):
-            ok = users.modify_user(uid, new_name=new_name_mod if new_name_mod else None,
+            if st.button("Modifier", key="admin_mod_button"):
+                ok = users.modify_user(uid, new_name=new_name_mod if new_name_mod else None,
                                         new_password=new_pass_mod if new_pass_mod else None)
-            if ok:
-                st.sidebar.success("Utilisateur modifié.")
-            else:
-                st.sidebar.error("Impossible de modifier cet utilisateur.")
+                if ok:
+                    st.success("Utilisateur modifié.")
+                else:
+                    st.error("Impossible de modifier cet utilisateur.")
 
     st.sidebar.markdown("---")
 
     # --- Supprimer un utilisateur ---
-    st.sidebar.markdown("### ❌ Supprimer un utilisateur")
+    with st.sidebar.expander("❌ Supprimer un utilisateur", expanded=False)
 
-    user_to_del = st.sidebar.selectbox("Utilisateur", [" "] + user_names, key="admin_del_select")
+        user_to_del = st.selectbox("Utilisateur", [" "] + user_names, key="admin_del_select")
 
-    if st.sidebar.button("Supprimer", key="admin_del_button"):
-        uid, _ = find_user_by_name(user_to_del)
-        ok = users.delete_user(uid)
-        if ok:
-            st.sidebar.success("Utilisateur supprimé.")
-        else:
-            st.sidebar.error("Impossible de supprimer cet utilisateur.")
+        if st.button("Supprimer", key="admin_del_button"):
+            uid, _ = find_user_by_name(user_to_del)
+            ok = users.delete_user(uid)
+            if ok:
+                st.success("Utilisateur supprimé.")
+            else:
+                st.error("Impossible de supprimer cet utilisateur.")
 
     st.sidebar.markdown("---")
 
