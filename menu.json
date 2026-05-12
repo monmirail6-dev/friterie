@@ -4,7 +4,7 @@
         "Moyenne": 4.0,
         "Grande": 4.5
     },
-    "Burger": {
+    "Burgers": {
         "Texan": 8.5,
         "Big Pepper": 7.9,
         "English": 8.9,
@@ -49,7 +49,7 @@
         "Brazil": 1.2,
         "Ail": 1.2
     },
-    "Supplément": {
+    "Suppléments": {
         "Oignons Frits": 0.4
     }
 }
