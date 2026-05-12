@@ -101,7 +101,7 @@ if st.session_state.user_id:
     st.markdown(
     """
     <style>
-    .welcome-box {
+    div[data-testid="stContainer"] > div.welcome-box {
         background:#0d0d0d;
         padding:25px;
         border-radius:12px;
@@ -114,35 +114,28 @@ if st.session_state.user_id:
     unsafe_allow_html=True
 )
 
-    with st.container():
-        st.markdown('<div class="welcome-box">', unsafe_allow_html=True)
-        col1, col2 = st.columns([1, 6])
-        with col1:
-            st.image("logo.png", width=70)
-        with col2:
-            st.markdown(
+with st.container():
+    st.markdown('<div class="welcome-box">', unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1, 6])
+
+    with col1:
+        st.image("logo.png", width=70)
+
+    with col2:
+        st.markdown(
             f"""
-            <h1 style="
-                font-size:42px;
-                margin:0;
-                font-weight:900;
-                letter-spacing:3px;
-                color:#00ff88;
-            ">
+            <h1 style="font-size:42px;margin:0;font-weight:900;letter-spacing:3px;color:#00ff88;">
                 WELCOME {st.session_state.user_name.upper()}
             </h1>
-
-            <p style="
-                font-size:18px;
-                margin-top:6px;
-                color:#b6ffda;
-            ">
+            <p style="font-size:18px;margin-top:6px;color:#b6ffda;">
                 ID : <strong>{st.session_state.user_id}</strong>
             </p>
             """,
             unsafe_allow_html=True
         )
 
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ============================================================
