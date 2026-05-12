@@ -232,7 +232,8 @@ if st.session_state.admin_mode:
                 menu.add_supp(new_supp, supp_price)
                 st.success(f"✅ Supplément « {new_supp} » ajouté.")
         with st.sidebar.expander("✏️ Modifier Items", expanded=False):
-            burgers_name = 
+            burgers_name = list(menu.Menu.get("Burgers", {}).keys())
+            choix_burger = st.selectbox("choisir un burger", burgers_name)
     
     st.sidebar.markdown("---")
     
