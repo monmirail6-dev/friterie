@@ -210,7 +210,7 @@ if st.session_state.admin_mode:
             if new_burger in Menu["burgers"]:
                 raise ValueError("le Burger est déjà dans la liste")
             menu.add_burger(new_burger, price)
-            return True
+            
             
 # ============================================================
 # 🟩 SIDEBAR CLIENT (SI PAS ADMIN)
