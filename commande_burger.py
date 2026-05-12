@@ -5,7 +5,6 @@ import commandes
 import ui
 import logic
 import pandas as pd
-import base64
 
 # Toujours définir action pour éviter les NameError
 action = None
@@ -96,12 +95,6 @@ if st.session_state.user_id:
     st.markdown("<p style='text-align:center;'>Friterie – Prise de commande</p>", unsafe_allow_html=True)
     st.markdown("---")
     
-    def img_to_base64(path):
-        with open(path, "rb") as f:
-            return base64.b64encode(f.read()).decode()
-
-    logo_base64 = img_to_base64("logo.png")
-
     st.markdown(
         f"""
         <div style="
