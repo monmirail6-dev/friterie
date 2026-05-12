@@ -6,8 +6,6 @@ import ui
 import logic
 import pandas as pd
 
-GITHUB_TOKEN = st.secrets["github_token"]
-
 
 # Toujours définir action pour éviter les NameError
 action = None
