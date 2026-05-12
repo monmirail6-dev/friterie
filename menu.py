@@ -59,9 +59,11 @@ def modify_burger(old_name, new_name, new_price):
     else:
         # On modifie juste le prix
         Menu["Burgers"][old_name] = new_price
+    save_menu()
 
 def del_burger(name):
     if name not in Menu["Burgers"]:
         raise ValueError(f"Le burger '{name}' n'existe pas.")
     del Menu["Burgers"][name]
+    save_menu()
 
