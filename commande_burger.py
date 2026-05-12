@@ -231,6 +231,20 @@ if st.session_state.admin_mode:
             else:
                 menu.add_supp(new_supp, supp_price)
                 st.success(f"✅ Supplément « {new_supp} » ajouté.")
+            new_supp = st.text_input("Nouveau supplément", key="new_supp")
+        supp_price = st.number_input("Prix", min_value=0.01, step=0.01, key="new_supp_price")
+        
+         # --- ajouter viande --- 
+        new_viande = st.text_input("Nouvelle viande", key="new_viande")
+        viande_price = st.numer_input("Prix", min_value=0.01, step=0.01, key="viande_price")
+        if st.button("Ajouter viande", key="admin_add_viande"):
+            if not new_viande.strip():
+                st.error("Nom invalide.")
+            elif new_supp in menu.Menu["Viandes"]:
+                st.error("Cette viande existe déjà.")
+            else:
+                menu.add_viande(new_viande, viande_price)
+                st.success(f"✅ Supplément « {new_viande} » ajouté.")
     # --- modifier burger ---            
     with st.sidebar.expander("✏️ Modifier Burger", expanded=False):
         burgers_name = list(menu.Menu.get("Burgers", {}).keys())
