@@ -232,7 +232,7 @@ if st.session_state.admin_mode:
                 menu.add_supp(new_supp, supp_price)
                 st.success(f"✅ Supplément « {new_supp} » ajouté.")
             new_supp = st.text_input("Nouveau supplément", key="new_supp")
-        supp_price = st.number_input("Prix", min_value=0.01, step=0.01, key="new_supp_price")
+            supp_price = st.number_input("Prix", min_value=0.01, step=0.01, key="new_supp_price")
         
          # --- ajouter viande --- 
         new_viande = st.text_input("Nouvelle viande", key="new_viande")
