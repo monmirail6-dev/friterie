@@ -96,7 +96,7 @@ if st.session_state.user_id:
     st.markdown("<p style='text-align:center;'>Friterie – Prise de commande</p>", unsafe_allow_html=True)
     st.markdown("---")
     
-st.markdown(
+    st.markdown(
         f"""
         <div style="background:#0d0d0d;padding:25px;border-radius:12px;text-align:center;
         color:#00ff88;border:2px solid #00ff88;box-shadow:0 0 12px rgba(0,255,136,0.25);margin-top:20px;">
