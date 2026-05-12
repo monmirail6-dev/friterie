@@ -98,44 +98,27 @@ if st.session_state.user_id:
     
     # ---- WELCOME AVEC LOGO DANS LE CADRE ----
 
+    if st.session_state.user_id:
+
+    st.markdown("---")
+    st.markdown("<h1 style='text-align:center;'>🍟 Rond‑Point</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;'>Friterie – Prise de commande</p>", unsafe_allow_html=True)
+    st.markdown("---")
+    
     st.markdown(
-    """
-    <style>
-    div[data-testid="stContainer"] > div.welcome-box {
-        background:#0d0d0d;
-        padding:25px;
-        border-radius:12px;
-        border:2px solid #00ff88;
-        box-shadow:0 0 12px rgba(0,255,136,0.25);
-        margin-top:20px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-with st.container():
-    st.markdown('<div class="welcome-box">', unsafe_allow_html=True)
-
-    col1, col2 = st.columns([1, 6])
-
-    with col1:
-        st.image("logo.png", width=70)
-
-    with col2:
-        st.markdown(
-            f"""
-            <h1 style="font-size:42px;margin:0;font-weight:900;letter-spacing:3px;color:#00ff88;">
+        f"""
+        <div style="background:#0d0d0d;padding:25px;border-radius:12px;text-align:center;
+        color:#00ff88;border:2px solid #00ff88;box-shadow:0 0 12px rgba(0,255,136,0.25);margin-top:20px;">
+            <h1 style="font-size:42px;margin:0;font-weight:900;letter-spacing:3px;">
                 WELCOME {st.session_state.user_name.upper()}
             </h1>
-            <p style="font-size:18px;margin-top:6px;color:#b6ffda;">
+            <p style="font-size:18px;margin-top:8px;color:#b6ffda;">
                 ID : <strong>{st.session_state.user_id}</strong>
             </p>
-            """,
-            unsafe_allow_html=True
-        )
-
-    st.markdown("</div>", unsafe_allow_html=True)
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
