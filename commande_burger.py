@@ -96,51 +96,76 @@ if st.session_state.user_id:
     st.markdown("---")
     
     st.markdown(
-        f"""
-        <div style="
+        """
+        <style>
+        .welcome-box {
             background:#0d0d0d;
             padding:25px;
             border-radius:12px;
             border:2px solid #00ff88;
             box-shadow:0 0 12px rgba(0,255,136,0.25);
             margin-top:20px;
-            ">
-                <div style="
-                    display:flex;
-                    align-items:center;
-                    gap:25px;
-                ">
-
-                
-                    <!-- LOGO À GAUCHE -->
-                        <img src="logo.png" style="width:70px; height:auto;" />
-
-                    <!-- TEXTE À DROITE -->
-                        <div>
-                    <h1 style="
-                        font-size:42px;
-                        margin:0;
-                        font-weight:900;
-                        letter-spacing:3px;
-                        color:#00ff88;
-                    ">
-                        WELCOME {st.session_state.user_name.upper()}
-                    </h1>
-
-                    <p style="
-                        font-size:18px;
-                        margin-top:6px;
-                        color:#b6ffda;
-                    ">
-                        ID : <strong>{st.session_state.user_id}</strong>
-                    </p>
-                </div>
-
-            </div>
-        </div>
+        }
+        </style>
         """,
         unsafe_allow_html=True
-    )
+)
+
+    with st.container():
+        st.markdown('<div class="welcome-box">', unsafe_allow_html=True)
+
+        col1, col2 = st.columns([1, 6])
+
+        with col1:
+            st.image("logo.png", width=70)
+
+        with col2:
+
+        st.markdown(
+            f"""
+            <div style="
+                background:#0d0d0d;
+                padding:25px;
+                border-radius:12px;
+                border:2px solid #00ff88;
+                box-shadow:0 0 12px rgba(0,255,136,0.25);
+                margin-top:20px;
+                ">
+                    <div style="
+                        display:flex;
+                        align-items:center;
+                        gap:25px;
+                    ">
+                    
+                        <!-- LOGO À GAUCHE -->
+                            <img src="logo.png" style="width:70px; height:auto;" />
+
+                        <!-- TEXTE À DROITE -->
+                            <div>
+                        <h1 style="
+                            font-size:42px;
+                            margin:0;
+                            font-weight:900;
+                            letter-spacing:3px;
+                            color:#00ff88;
+                        ">
+                            WELCOME {st.session_state.user_name.upper()}
+                        </h1>
+
+                        <p style="
+                            font-size:18px;
+                            margin-top:6px;
+                            color:#b6ffda;
+                        ">
+                            ID : <strong>{st.session_state.user_id}</strong>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
 # ============================================================
