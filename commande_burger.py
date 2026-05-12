@@ -164,7 +164,7 @@ if st.session_state.admin_mode:
     st.sidebar.markdown("---")
 
     # --- Modifier un utilisateur ---
-    with st.sidebar.expander("✏️ Modifier un utilisateur", expanded=False)
+    with st.sidebar.expander("✏️ Modifier un utilisateur", expanded=False):
 
         user_names = [data["name"] for data in all_users.values()]
         user_to_mod = st.selectbox("Utilisateur", [" "] + user_names, key="admin_mod_select")
@@ -186,7 +186,7 @@ if st.session_state.admin_mode:
     st.sidebar.markdown("---")
 
     # --- Supprimer un utilisateur ---
-    with st.sidebar.expander("❌ Supprimer un utilisateur", expanded=False)
+    with st.sidebar.expander("❌ Supprimer un utilisateur", expanded=False):
 
         user_to_del = st.selectbox("Utilisateur", [" "] + user_names, key="admin_del_select")
 
