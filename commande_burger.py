@@ -194,14 +194,7 @@ if st.session_state.admin_mode:
             else:
                 st.error("Impossible de supprimer cet utilisateur.")
 
-    st.sidebar.markdown("---")
-
-    if st.sidebar.button("Déconnexion", key="admin_logout"):
-        st.session_state.user_id = None
-        st.session_state.user_name = None
-        st.session_state.admin_mode = False
-        st.rerun()
-        
+    st.sidebar.markdown("---")        
     # --- ajouter burger ---
     with st.sidebar.expander("➕ Ajouter un burger", expanded=False):
         new_burger = st.text_input("Nouveau burger", key="new_burger")
@@ -215,6 +208,14 @@ if st.session_state.admin_mode:
             else:
                 menu.add_burger(new_burger, price)
                 st.success(f"✅ Burger « {new_burger} » ajouté.")
+                
+    st.sidebar.markdown("---")    
+    
+    if st.sidebar.button("Déconnexion", key="admin_logout"):
+        st.session_state.user_id = None
+        st.session_state.user_name = None
+        st.session_state.admin_mode = False
+        st.rerun()
 
             
             
