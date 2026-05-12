@@ -5,6 +5,7 @@ import commandes
 import ui
 import logic
 import pandas as pd
+import base64
 
 # Toujours définir action pour éviter les NameError
 action = None
@@ -94,21 +95,59 @@ if st.session_state.user_id:
     st.markdown("<h1 style='text-align:center;'>🍟 Rond‑Point</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center;'>Friterie – Prise de commande</p>", unsafe_allow_html=True)
     st.markdown("---")
+    
+def img_to_base64(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
 
-    st.markdown(
-        f"""
-        <div style="background:#0d0d0d;padding:25px;border-radius:12px;text-align:center;
-        color:#00ff88;border:2px solid #00ff88;box-shadow:0 0 12px rgba(0,255,136,0.25);margin-top:20px;">
-            <h1 style="font-size:42px;margin:0;font-weight:900;letter-spacing:3px;">
-                ✈️ WELCOME {st.session_state.user_name.upper()}
-            </h1>
-            <p style="font-size:18px;margin-top:8px;color:#b6ffda;">
-                ID : <strong>{st.session_state.user_id}</strong>
-            </p>
+logo_base64 = img_to_base64("logo.jpg")
+
+st.markdown(
+    f"""
+    <div style="
+        background:#0d0d0d;
+        padding:25px;
+        border-radius:12px;
+        border:2px solid #00ff88;
+        box-shadow:0 0 12px rgba(0,255,136,0.25);
+        margin-top:20px;
+    ">
+        <div style="
+            display:flex;
+            align-items:center;
+            gap:25px;
+        ">
+
+            <!-- LOGO À GAUCHE -->
+            <img src="data:image/jpeg;base64,{logo_base64}"
+                 style="width:70px; height:auto;" />
+
+            <!-- TEXTE À DROITE -->
+            <div>
+                <h1 style="
+                    font-size:42px;
+                    margin:0;
+                    font-weight:900;
+                    letter-spacing:3px;
+                    color:#00ff88;
+                ">
+                    WELCOME {st.session_state.user_name.upper()}
+                </h1>
+
+                <p style="
+                    font-size:18px;
+                    margin-top:6px;
+                    color:#b6ffda;
+                ">
+                    ID : <strong>{st.session_state.user_id}</strong>
+                </p>
+            </div>
+
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # ============================================================
 # 🟥 BOUTON MODE ADMIN (BOBO SEULEMENT)
