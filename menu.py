@@ -41,6 +41,11 @@ def add_supp(name, price):
 def add_viande(name, price):
     if price <= 0:
         raise ValueError("Le prix doit être positif")
+
+    # Si la catégorie n'existe pas → on la crée
+    if "Viandes" not in Menu:
+        Menu["Viandes"] = {}
+
     Menu["Viandes"][name] = price
     save_menu()
 
