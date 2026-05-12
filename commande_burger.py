@@ -209,7 +209,7 @@ if st.session_state.admin_mode:
         if st.button("ajouter un burger", key="admin_add_burger"):
             if new_burger in Menu["burgers"]:
                 return False
-        menu.add_burger(new_burger, price)
+            menu.add_burger(new_burger, price)
         return True
             
 # ============================================================
