@@ -208,9 +208,9 @@ if st.session_state.admin_mode:
         price = st.number_input("prix", min_value=0, step=0.01, key="new_price")
         if st.button("ajouter un burger", key="admin_add_burger"):
             if new_burger in Menu["burgers"]:
-                return False
+                raise ValueError("le Burger est déjà dans la liste")
             menu.add_burger(new_burger, price)
-        return True
+            return True
             
 # ============================================================
 # 🟩 SIDEBAR CLIENT (SI PAS ADMIN)
