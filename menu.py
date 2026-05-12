@@ -1,5 +1,8 @@
 import json
 import os
+import streamlit as st
+
+token = st.secrets["GITHUB_TOKEN"]
 
 MENU_FILE = "menu.json"
 
