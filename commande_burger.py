@@ -244,7 +244,7 @@ if st.session_state.admin_mode:
                 st.error("Cette viande existe déjà.")
             else:
                 menu.add_viande(new_viande, viande_price)
-                st.success(f"✅ Supplément « {new_viande} » ajouté.")
+                st.success(f"✅ Viande « {new_viande} » ajouté.")
     # --- modifier burger ---            
     with st.sidebar.expander("✏️ Modifier Burger", expanded=False):
         burgers_name = list(menu.Menu.get("Burgers", {}).keys())
