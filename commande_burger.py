@@ -209,7 +209,7 @@ if st.session_state.admin_mode:
                 menu.add_burger(new_burger, price)
                 st.success(f"✅ Burger « {new_burger} » ajouté.")
 
-        st.sidebar.markdown("---")
+            st.sidebar.markdown("---")
         # --- ajouter sauce ---
         new_sauce = st.text_input("Nouvelle sauce", key="new_sauce")
         if st.button("Ajouter la sauce", key="admin_add_sauce"):
@@ -220,7 +220,7 @@ if st.session_state.admin_mode:
             else:
                 menu.add_sauce(new_sauce)
                 st.success(f"✅ Sauce « {new_sauce} » ajouté.")
-        st.sidebar.markdown("---")
+            st.sidebar.markdown("---")
                 
     st.sidebar.markdown("---")    
     
