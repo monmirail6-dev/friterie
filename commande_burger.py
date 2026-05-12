@@ -227,15 +227,15 @@ if st.session_state.user_id and not st.session_state.admin_mode:
         new = st.text_input("Nouveau mot de passe", type="password", key="client_new_pass")
         new2 = st.text_input("Confirmer", type="password", key="client_new_pass2")
 
-    if st.button("Changer mot de passe", key="client_change_pass"):
-        if new != new2:
-            st.error("Les mots de passe ne correspondent pas.")
-        else:
-            ok = users.change_password(st.session_state.user_id, old, new)
-            if ok:
-                st.success("Mot de passe changé.")
+        if st.button("Changer mot de passe", key="client_change_pass"):
+            if new != new2:
+                st.error("Les mots de passe ne correspondent pas.")
             else:
-                st.error("Erreur : ancien mot de passe incorrect.")
+                ok = users.change_password(st.session_state.user_id, old, new)
+                if ok:
+                    st.success("Mot de passe changé.")
+                else:
+                    st.error("Erreur : ancien mot de passe incorrect.")
 
     st.sidebar.markdown("---")
 
