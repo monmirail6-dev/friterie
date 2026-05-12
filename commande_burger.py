@@ -100,7 +100,7 @@ if st.session_state.user_id:
         with open(path, "rb") as f:
             return base64.b64encode(f.read()).decode()
 
-    logo_base64 = img_to_base64("logo.jpg")
+    logo_base64 = img_to_base64("logo.png")
 
     st.markdown(
         f"""
@@ -119,9 +119,8 @@ if st.session_state.user_id:
                 ">
 
                 <!-- LOGO À GAUCHE -->
-                <img src="data:image/jpeg;base64,{logo_base64}"
-                     style="width:70px; height:auto;" />
-
+                <img src="logo.png style="width:70px; height:auto;" />
+                
                 <!-- TEXTE À DROITE -->
                 <div>
                     <h1 style="
