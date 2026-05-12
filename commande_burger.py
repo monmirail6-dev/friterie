@@ -161,8 +161,6 @@ if st.session_state.admin_mode:
                 new_id = users.create_user(new_name, new_pass, admin=False)
                 st.success(f"Utilisateur créé : {new_name} — ID : {new_id}")
 
-    st.sidebar.markdown("---")
-
     # --- Modifier un utilisateur ---
     with st.sidebar.expander("✏️ Modifier un utilisateur", expanded=False):
 
@@ -182,8 +180,6 @@ if st.session_state.admin_mode:
                     st.success("Utilisateur modifié.")
                 else:
                     st.error("Impossible de modifier cet utilisateur.")
-
-    st.sidebar.markdown("---")
 
     # --- Supprimer un utilisateur ---
     with st.sidebar.expander("❌ Supprimer un utilisateur", expanded=False):
