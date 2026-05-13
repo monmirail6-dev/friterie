@@ -66,6 +66,14 @@ def regrouper_burger_supps(panier):
             items_affichage.append({"Article": item, "Prix (€)": f"{prix:.2f}"})
             total += prix
 
+        # --------------------------
+        #  VIANDES
+        # --------------------------
+        elif item in menu.Menu["Viandes"]:
+            prix = menu.Menu["Viandes"][item]
+            items_affichage.append({"Article": item, "Prix (€)": f"{prix:.2f}"})
+            total += prix
+
         i += 1
 
     return items_affichage, total
