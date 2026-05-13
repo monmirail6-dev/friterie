@@ -86,7 +86,10 @@ if st.session_state.user_id is None:
                 st.sidebar.error("Les mots de passe ne correspondent pas.")
             else:
                 new_id = users.create_user(reg_name, reg_pass, admin=False)
-                st.sidebar.success(f"Compte créé ! Votre ID : {new_id}")
+                    if new_id is None:
+                        st.sidebar.error("❌ Nom déjà utilisé.")
+                    else:
+                        st.sidebar.success(f"Compte créé ! ID : {new_id}")
                 st.sidebar.info("Vous pouvez maintenant vous connecter.")
 
 # ============================================================
