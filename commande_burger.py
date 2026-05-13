@@ -363,7 +363,7 @@ if st.session_state.user_id and not st.session_state.admin_mode:
                     if panier[i] in menu.Menu["Burgers"]:
                         last_burger = i
                         break
-                    if panier[i] in menu.Menu["Frites"] or panier[i] in menu.Menu["Sauces"]:
+                    if panier[i] in menu.Menu["Frites"] or panier[i] in menu.Menu["Sauces"] or panier[i] in menu.Menu["Viandes"]:
                         break
 
                 if last_burger is None:
