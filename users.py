@@ -86,7 +86,6 @@ def create_user(name, password, admin=False):
 
     save_users()
     return new_id
-``
 
 
 def users_list():
