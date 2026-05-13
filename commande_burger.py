@@ -202,4 +202,3 @@ for cat, items in menu_data.items():
             unsafe_allow_html=True
         )
     )
-``
