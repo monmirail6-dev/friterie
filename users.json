@@ -3,15 +3,5 @@
         "name": "Bobo",
         "password": "Fl0t$T!s",
         "admin": true
-    },
-    "0000001": {
-        "name": "test",
-        "password": "test",
-        "admin": false
-    },
-    "0000002": {
-        "name": "Thibault",
-        "password": "test",
-        "admin": false
-    },
+    }
 }
