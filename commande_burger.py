@@ -385,7 +385,7 @@ if st.session_state.user_id and not st.session_state.admin_mode:
                 st.rerun()
 
         choix = st.radio("Choisir une catégorie",
-                         ["🍔 Burger + Suppléments", "🍟 Frites", "🥫 Sauces"],
+                         ["🍔 Burger + Suppléments", "🍟 Frites", "🥫 Sauces", "🍢Viandes"],
                          key="radio_categorie")
 
         if choix == "🍔 Burger + Suppléments":
@@ -402,6 +402,10 @@ if st.session_state.user_id and not st.session_state.admin_mode:
         if choix == "🥫 Sauces":
             st.subheader("🥫 Sauces")
             ui.colonnes(menu.Menu["Sauces"], bouton_ajout_simple)
+
+        if choix == "🍢 Viandes":
+            st.subheader("🍢 Viandes")
+            ui.colonnes(menu.Menu["Viandes"], bouton_ajout_simple)
 
         st.markdown("---")
         st.subheader("🧺 Panier actuel")
