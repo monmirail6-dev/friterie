@@ -9,6 +9,7 @@ import os
 
 
 st.write(menu.Menu["Viandes"])
+st.write("DEBUG VIANDES :", menu.Menu.get("Viandes"))
 
 token = st.secrets["GITHUB_TOKEN"]
 
