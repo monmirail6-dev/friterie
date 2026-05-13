@@ -8,6 +8,8 @@ import pandas as pd
 import os
 
 
+st.write(menu.Menu["Viandes"])
+
 token = st.secrets["GITHUB_TOKEN"]
 
 # Toujours définir action pour éviter les NameError
