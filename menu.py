@@ -19,7 +19,6 @@ def load_menu():
             except json.JSONDecodeError:
                 return {}
 
-    # ✅ structure par défaut (important)
     return {
         "Burgers": {},
         "Frites": {},
@@ -28,79 +27,64 @@ def load_menu():
         "Viandes": {}
     }
 
-
 # ============================================================
-# 🔹 SAVE (LOCAL + GITHUB)
+# 🔹 SAVE MENU (LOCAL + GITHUB)
 # ============================================================
 def save_menu():
-
-    # ✅ sauvegarde locale
+    # local
     with open(MENU_FILE, "w", encoding="utf-8") as f:
         json.dump(Menu, f, indent=4, ensure_ascii=False)
 
-    # ✅ push GitHub
+    # github
     try:
         token = st.secrets["GITHUB_TOKEN"]
 
         url = f"https://api.github.com/repos/{REPO}/contents/{FILE_PATH}"
 
-        headers = {
-            "Authorization": f"token {token}"
-        }
+        headers = {"Authorization": f"token {token}"}
 
-        # 🔹 récupérer SHA
         r = requests.get(url, headers=headers)
         data = r.json()
 
         sha = data["sha"]
 
-        # 🔹 encoder contenu
         content_encoded = base64.b64encode(
             json.dumps(Menu, indent=4, ensure_ascii=False).encode()
         ).decode()
 
-        commit_data = {
+        requests.put(url, headers=headers, json={
             "message": "Update menu via Streamlit",
             "content": content_encoded,
             "sha": sha
-        }
-
-        requests.put(url, headers=headers, json=commit_data)
+        })
 
     except Exception as e:
-        print("⚠️ GitHub sync failed:", e)
-
+        print("GitHub error:", e)
 
 # ============================================================
-# 🔹 INIT MENU
+# 🔹 INIT
 # ============================================================
 Menu = load_menu()
 
-# Sécurité : s'assurer que toutes les clés existent
 for key in ["Burgers", "Frites", "Sauces", "Suppléments", "Viandes"]:
     if key not in Menu:
         Menu[key] = {}
 
-
 # ============================================================
-# 🔹 CRUD MENU
+# 🔹 CRUD
 # ============================================================
-
-# --- Burger ---
 def add_burger(name, price):
     if price <= 0:
-        raise ValueError("Le prix doit être positif")
-
+        raise ValueError("Prix invalide")
     Menu["Burgers"][name] = price
     save_menu()
 
-
 def modify_burger(old_name, new_name, new_price):
     if old_name not in Menu["Burgers"]:
-        raise ValueError(f"Le burger '{old_name}' n'existe pas.")
+        raise ValueError("Burger inexistant")
 
     if new_price <= 0:
-        raise ValueError("Le prix doit être positif.")
+        raise ValueError("Prix invalide")
 
     if new_name != old_name:
         del Menu["Burgers"][old_name]
@@ -108,40 +92,29 @@ def modify_burger(old_name, new_name, new_price):
     Menu["Burgers"][new_name] = new_price
     save_menu()
 
-
 def del_burger(name):
     if name not in Menu["Burgers"]:
-        raise ValueError(f"Le burger '{name}' n'existe pas.")
+        raise ValueError("Burger inexistant")
 
     del Menu["Burgers"][name]
     save_menu()
 
-
-# --- Sauce ---
-SAUCE_PRICE = 1.20
-
 def add_sauce(name):
-    Menu["Sauces"][name] = SAUCE_PRICE
+    Menu["Sauces"][name] = 1.20
     save_menu()
 
-
-# --- Suppléments ---
 def add_supp(name, price):
     if price <= 0:
-        raise ValueError("Le prix doit être positif")
-
+        raise ValueError("Prix invalide")
     Menu["Suppléments"][name] = price
     save_menu()
 
-
-# --- Viandes ---
 def add_viande(name, price):
     if price <= 0:
-        raise ValueError("Le prix doit être positif")
+        raise ValueError("Prix invalide")
 
     if "Viandes" not in Menu:
         Menu["Viandes"] = {}
 
     Menu["Viandes"][name] = price
     save_menu()
-``
