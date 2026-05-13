@@ -9,19 +9,18 @@ import os
 
 token = st.secrets["GITHUB_TOKEN"]
 
-# ✅ CSS (chargé une seule fois)
+# ✅ CSS stable
 if "css_loaded" not in st.session_state:
     ui.inject_css()
     st.session_state.css_loaded = True
 
-# Toujours définir action
 action = None
 
-# ✅ Nouveau menu chargé (cache)
+# ✅ MENU CHARGÉ (IMPORTANT)
 menu_data = menu.load_menu()
 
 # ============================================================
-# 🔒 INIT
+# INIT
 # ============================================================
 users.create_bobo_admin()
 
@@ -55,82 +54,21 @@ if st.session_state.user_id is None:
 
         if st.button("Connexion", key="login_button"):
             uid, data = find_user_by_name(login_name)
-
-            if uid is None:
-                st.sidebar.error("Nom inconnu.")
-            else:
+            if uid:
                 ok = users.authenticate(uid, login_password)
                 if ok:
                     st.session_state.user_id = uid
                     st.session_state.user_name = data["name"]
                     st.rerun()
-                else:
-                    st.sidebar.error("Mot de passe incorrect.")
-
-    with tab_register:
-        reg_name = st.text_input("Nom complet", key="reg_name")
-        reg_pass = st.text_input("Mot de passe", type="password", key="reg_pass")
-        reg_pass2 = st.text_input("Confirmer", type="password", key="reg_pass2")
-
-        if st.button("Créer le compte", key="register_button"):
-            if reg_pass != reg_pass2:
-                st.sidebar.error("Mismatch")
-            else:
-                users.create_user(reg_name, reg_pass)
-                st.sidebar.success("Compte créé")
 
 # ============================================================
 # WELCOME
 # ============================================================
 if st.session_state.user_id:
-
-    st.markdown("---")
     st.markdown("<h1 style='text-align:center;'>🍟 Rond‑Point</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center;'>Friterie – Prise de commande</p>", unsafe_allow_html=True)
-    st.markdown("---")
-
-    st.markdown(
-        f"""
-        <div style="background:#0d0d0d;padding:25px;border-radius:12px;text-align:center;
-        color:#00ff88;border:2px solid #00ff88;box-shadow:0 0 12px rgba(0,255,136,0.25);margin-top:20px;">
-            <h1 style="font-size:42px;margin:0;font-weight:900;letter-spacing:3px;">
-                WELCOME {st.session_state.user_name.upper()}
-            </h1>
-            <p style="font-size:18px;margin-top:8px;color:#b6ffda;">
-                ID : <strong>{st.session_state.user_id}</strong>
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
 # ============================================================
-# ADMIN MODE
-# ============================================================
-if st.session_state.user_name == "Bobo" and st.session_state.user_id == "2641987":
-
-    if not st.session_state.admin_mode:
-        if st.sidebar.button("🛠️ Activer mode admin", key="admin_on"):
-            st.session_state.admin_mode = True
-            st.rerun()
-    else:
-        if st.sidebar.button("❌ Quitter mode admin", key="admin_off"):
-            st.session_state.admin_mode = False
-            st.rerun()
-
-# ============================================================
-# ADMIN
-# ============================================================
-if st.session_state.admin_mode:
-
-    # ✅ bouton GitHub
-    st.sidebar.markdown("---")
-    if st.sidebar.button("💾 Synchroniser avec GitHub", key="sync_github"):
-        if menu.sync_menu_github() and users.sync_users_github():
-            st.sidebar.success("✅ OK")
-
-# ============================================================
-# CLIENT SIDEBAR
+# SIDEBAR CLIENT
 # ============================================================
 if st.session_state.user_id and not st.session_state.admin_mode:
 
@@ -155,32 +93,74 @@ if st.session_state.user_id and not st.session_state.admin_mode:
 
     uid = st.session_state.user_id
 
+    # ✅ IMPORTANT fix
+    action = st.session_state.get("client_action")
+
     if action == "Nouvelle commande":
+
+        st.header("🧾 Nouvelle commande")
 
         if "panier" not in st.session_state:
             st.session_state.panier = []
 
-        def bouton(n):
-            st.session_state.panier.append(n)
-            st.rerun()
+        def bouton_ajout_simple(nom, prix):
+            if ui.bouton(f"{nom} — {prix:.2f} €", key=f"btn_{nom}"):
+                st.session_state.panier.append(nom)
+                st.rerun()
 
-        ui.colonnes(menu_data["Burgers"], lambda n, p: bouton(n))
-        ui.colonnes(menu_data["Suppléments"], lambda n, p: bouton(n))
+        def bouton_ajout_supp(nom, prix):
+            if ui.bouton(f"{nom} — {prix:.2f} €", key=f"supp_{nom}"):
 
-        for x in st.session_state.panier:
-            st.write(x)
+                panier = st.session_state.panier
+
+                last_burger = None
+                for i in range(len(panier) - 1, -1, -1):
+                    if panier[i] in menu_data["Burgers"]:
+                        last_burger = i
+                        break
+
+                if last_burger is None:
+                    st.error("Ajoutez un burger d'abord")
+                    return
+
+                st.session_state.panier.append(nom)
+                st.rerun()
+
+        choix = st.radio(
+            "Choisir une catégorie",
+            ["🍔 Burger + Suppléments", "🍟 Frites", "🥫 Sauces"]
+        )
+
+        if choix == "🍔 Burger + Suppléments":
+            ui.colonnes(menu_data["Burgers"], bouton_ajout_simple)
+            ui.colonnes(menu_data["Suppléments"], bouton_ajout_supp)
+
+        st.subheader("Panier")
+        for item in st.session_state.panier:
+            st.write(item)
 
         if st.button("Valider"):
             commandes.add_command(uid, st.session_state.panier)
             st.session_state.panier = []
             st.rerun()
 
+    if action == "Afficher ticket":
+        ticket = logic.generer_ticket(uid)
+        df = pd.DataFrame(ticket["items"])
+        st.dataframe(df)
+
 # ============================================================
-# MENU
+# ✅ GITHUB SYNC
+# ============================================================
+if st.session_state.admin_mode:
+    if st.sidebar.button("💾 Sync GitHub"):
+        menu.sync_menu_github()
+        users.sync_users_github()
+
+# ============================================================
+# MENU GLOBAL
 # ============================================================
 st.header("📋 Menu")
-
-menu_data = menu.load_menu()
 
 for categorie, items in menu_data.items():
     ui.categorie(categorie)
@@ -191,5 +171,4 @@ for categorie, items in menu_data.items():
             unsafe_allow_html=True
         )
     )
-
-
+``
