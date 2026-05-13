@@ -1,11 +1,17 @@
 import json
 import os
+import base64
+import requests
 import streamlit as st
 
-token = st.secrets["GITHUB_TOKEN"]
-
 USERS_FILE = "users.json"
+REPO = "monmirail6-dev/friterie"
+FILE_PATH = "users.json"
 
+
+# ============================================================
+# 🔹 LOAD USERS
+# ============================================================
 def load_users():
     if os.path.exists(USERS_FILE):
         with open(USERS_FILE, "r", encoding="utf-8") as f:
@@ -15,10 +21,50 @@ def load_users():
                 return {}
     return {}
 
+
+# ============================================================
+# 🔹 SAVE (LOCAL + GITHUB)
+# ============================================================
 def save_users(users):
+
+    # ✅ sauvegarde locale
     with open(USERS_FILE, "w", encoding="utf-8") as f:
         json.dump(users, f, indent=4, ensure_ascii=False)
 
+    # ✅ push GitHub
+    try:
+        token = st.secrets["GITHUB_TOKEN"]
+
+        url = f"https://api.github.com/repos/{REPO}/contents/{FILE_PATH}"
+
+        headers = {
+            "Authorization": f"token {token}"
+        }
+
+        r = requests.get(url, headers=headers)
+        data = r.json()
+
+        sha = data["sha"]
+
+        content_encoded = base64.b64encode(
+            json.dumps(users, indent=4, ensure_ascii=False).encode()
+        ).decode()
+
+        commit_data = {
+            "message": "Update users.json via Streamlit",
+            "content": content_encoded,
+            "sha": sha
+        }
+
+        requests.put(url, headers=headers, json=commit_data)
+
+    except Exception as e:
+        print("⚠️ GitHub sync failed:", e)
+
+
+# ============================================================
+# 🔹 ID GENERATION
+# ============================================================
 def get_next_id():
     users = load_users()
     liste_ids_normaux = []
@@ -33,6 +79,10 @@ def get_next_id():
     next_id = max(liste_ids_normaux) + 1
     return str(next_id).zfill(7)
 
+
+# ============================================================
+# 🔹 CRUD USERS
+# ============================================================
 def create_user(name, password, admin=False):
     users = load_users()
     new_id = get_next_id()
@@ -46,16 +96,24 @@ def create_user(name, password, admin=False):
     save_users(users)
     return new_id
 
-def authenticate(id, password):
+
+def users_list():
+    return load_users()
+
+
+def delete_user(id):
     users = load_users()
+
+    if id == "2641987":
+        return False
 
     if id not in users:
         return False
 
-    if users[id]["password"] != password:
-        return False
+    del users[id]
+    save_users(users)
+    return True
 
-    return True, users[id]["admin"]
 
 def modify_user(id, new_name=None, new_password=None, new_admin=None):
     users = load_users()
@@ -63,6 +121,7 @@ def modify_user(id, new_name=None, new_password=None, new_admin=None):
     if id not in users:
         return False
 
+    # Protection Bobo
     if id == "2641987":
         if new_admin is not None and new_admin is False:
             return False
@@ -81,26 +140,26 @@ def modify_user(id, new_name=None, new_password=None, new_admin=None):
     save_users(users)
     return True
 
-def delete_user(id):
-    users = load_users()
 
-    if id == "2641987":
-        return False
+# ============================================================
+# 🔹 AUTH
+# ============================================================
+def authenticate(id, password):
+    users = load_users()
 
     if id not in users:
         return False
 
-    del users[id]
-    save_users(users)
-    return True
+    if users[id]["password"] != password:
+        return False
+
+    return True, users[id]["admin"]
+
 
 def change_password(id, old_password, new_password):
     users = load_users()
 
     if id not in users:
-        return False
-
-    if id == "2641987" and old_password != users[id]["password"]:
         return False
 
     if users[id]["password"] != old_password:
@@ -110,9 +169,10 @@ def change_password(id, old_password, new_password):
     save_users(users)
     return True
 
-def users_list():
-    return load_users()
 
+# ============================================================
+# 🔹 BOBO ADMIN
+# ============================================================
 def create_bobo_admin():
     users = load_users()
 
