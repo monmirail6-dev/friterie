@@ -9,7 +9,6 @@ import os
 
 
 token = st.secrets["GITHUB_TOKEN"]
-st.write(st.secrets["GITHUB_TOKEN"])
 
 # Toujours définir action pour éviter les NameError
 action = None
