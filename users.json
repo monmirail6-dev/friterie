@@ -13,5 +13,10 @@
         "name": "test3",
         "password": "test",
         "admin": false
+    },
+    "0000004": {
+        "name": "test4",
+        "password": "test",
+        "admin": false
     }
 }
