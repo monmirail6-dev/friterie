@@ -9,7 +9,7 @@ import os
 
 
 token = st.secrets["GITHUB_TOKEN"]
-g = Github(token)
+
 
 # Toujours définir action pour éviter les NameError
 action = None
