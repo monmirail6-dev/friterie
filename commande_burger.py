@@ -180,13 +180,16 @@ if st.session_state.user_id and not st.session_state.admin_mode:
 # ============================================================
 st.header("📋 Menu")
 
-for cat, items in menu_data.items():
-    ui.categorie(cat)
+menu_data = menu.load_menu()
+
+for categorie, items in menu_data.items():
+    ui.categorie(categorie)
     ui.colonnes(
         items,
-        lambda n, p: st.markdown(
-            f"<div class='menu-line'>{n}<span class='menu-price'>{p:.2f} €</span></div>",
+        lambda nom, prix: st.markdown(
+            f"<div class='menu-line'>{nom}<span class='menu-price'>{prix:.2f} €</span></div>",
             unsafe_allow_html=True
         )
     )
+``
 
