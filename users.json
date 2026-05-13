@@ -8,5 +8,10 @@
         "name": "thibault",
         "password": "test",
         "admin": false
+    },
+    "0000002": {
+        "name": "Test",
+        "password": "test",
+        "admin": false
     }
 }
