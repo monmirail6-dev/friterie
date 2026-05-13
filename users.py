@@ -70,6 +70,12 @@ def get_next_id():
 
 
 def create_user(name, password, admin=False):
+
+    # ✅ vérifier unicité du nom
+    for u in users.values():
+        if u["name"].lower() == name.lower():
+            return None  # déjà existant
+
     new_id = get_next_id()
 
     users[new_id] = {
@@ -80,6 +86,7 @@ def create_user(name, password, admin=False):
 
     save_users()
     return new_id
+``
 
 
 def users_list():
