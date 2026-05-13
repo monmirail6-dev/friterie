@@ -385,7 +385,7 @@ if st.session_state.user_id and not st.session_state.admin_mode:
                 st.rerun()
 
         choix = st.radio("Choisir une catégorie",
-                         ["🍔 Burger + Suppléments", "🍟 Frites", "🥫 Sauces", "🍢Viandes"],
+                         ["🍔 Burger + Suppléments", "🍟 Frites", "🥫 Sauces", "🍢 Viandes"],
                          key="radio_categorie")
 
         if choix == "🍔 Burger + Suppléments":
