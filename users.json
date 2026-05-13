@@ -14,9 +14,4 @@
         "password": "test",
         "admin": false
     },
-    "0000003": {
-        "name": "test",
-        "password": "test",
-        "admin": false
-    }
 }
