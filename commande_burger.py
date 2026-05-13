@@ -6,7 +6,7 @@ import ui
 import logic
 import pandas as pd
 import os
-from github import Github
+
 
 token = st.secrets["GITHUB_TOKEN"]
 g = Github(token)
