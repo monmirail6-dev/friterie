@@ -5,8 +5,11 @@ import commandes
 import ui
 import logic
 import pandas as pd
+import os
+from github import Github
 
 token = st.secrets["GITHUB_TOKEN"]
+g = Github(token)
 
 # Toujours définir action pour éviter les NameError
 action = None
