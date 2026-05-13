@@ -101,60 +101,194 @@ if st.session_state.user_name == "Bobo" and st.session_state.user_id == "2641987
             st.rerun()
 
 # ============================================================
-# SIDEBAR ADMIN
+# 🟦 SIDEBAR ADMIN
 # ============================================================
 if st.session_state.admin_mode:
 
     st.sidebar.title("🛠️ Administration")
 
-    # USERS
-    with st.sidebar.expander("👥 Utilisateurs", expanded=False):
+    # RESET COMMANDES
+    if st.sidebar.button("♻️ Reset commandes", key="reset_cmd"):
+        commandes.reset_command()
+        st.sidebar.success("Toutes les commandes ont été réinitialisées.")
+
+    st.sidebar.markdown("---")
+
+    # LISTE USERS
+    st.sidebar.subheader("👥 Utilisateurs")
+    all_users = users.users_list()
+
+    # --- Ajouter un utilisateur ---
+    with st.sidebar.expander("➕ Ajouter un utilisateur", expanded=False):
         new_name = st.text_input("Nom", key="admin_add_name")
         new_pass = st.text_input("Mot de passe", type="password", key="admin_add_pass")
 
         if st.button("Créer utilisateur", key="admin_add_button"):
-            if new_name.strip():
-                users.create_user(new_name, new_pass)
-                st.success("Utilisateur créé")
+            if new_name.strip() == "":
+                st.error("Nom invalide.")
+            else:
+                new_id = users.create_user(new_name, new_pass, admin=False)
+                st.success(f"Utilisateur créé : {new_name} — ID : {new_id}")
                 st.rerun()
 
-    # MENU
+    # --- Modifier un utilisateur ---
+    with st.sidebar.expander("✏️ Modifier un utilisateur", expanded=False):
+
+        user_names = [data["name"] for data in all_users.values()]
+        user_to_mod = st.selectbox("Utilisateur", [" "] + user_names, key="admin_mod_select")
+
+        if user_to_mod.strip() != " ":
+            uid = None
+            for i, d in all_users.items():
+                if d["name"] == user_to_mod:
+                    uid = i
+
+            new_name_mod = st.text_input("Nouveau nom", key="admin_mod_name")
+            new_pass_mod = st.text_input("Nouveau mot de passe", type="password", key="admin_mod_pass")
+
+            if st.button("Modifier", key="admin_mod_button"):
+                ok = users.modify_user(uid,
+                    new_name=new_name_mod if new_name_mod else None,
+                    new_password=new_pass_mod if new_pass_mod else None
+                )
+
+                if ok:
+                    st.success("Utilisateur modifié.")
+                    st.rerun()
+                else:
+                    st.error("Impossible de modifier cet utilisateur.")
+
+    # --- Supprimer un utilisateur ---
+    with st.sidebar.expander("❌ Supprimer un utilisateur", expanded=False):
+
+        user_to_del = st.selectbox("Utilisateur", [" "] + user_names, key="admin_del_select")
+
+        if st.button("Supprimer", key="admin_del_button"):
+            uid = None
+            for i, d in all_users.items():
+                if d["name"] == user_to_del:
+                    uid = i
+
+            ok = users.delete_user(uid)
+
+            if ok:
+                st.success("Utilisateur supprimé.")
+                st.rerun()
+            else:
+                st.error("Impossible de supprimer cet utilisateur.")
+
+    st.sidebar.markdown("---")
+
+    # ============================
+    # 🍔 MENU
+    # ============================
     with st.sidebar.expander("➕ Ajouter un item", expanded=False):
 
         menu_data = menu.load_menu()
 
+        # --- BURGER ---
         new_burger = st.text_input("Nouveau burger", key="new_burger")
-        price = st.number_input("prix", min_value=0.01, step=0.01, key="new_price")
+        burger_price = st.number_input("Prix", min_value=0.01, step=0.01, key="new_price")
 
-        if st.button("Ajouter burger", key="add_burger"):
-            if new_burger in menu_data["Burgers"]:
-                st.error("Existe déjà")
+        if st.button("Ajouter le burger", key="admin_add_burger"):
+            if not new_burger.strip():
+                st.error("Nom invalide.")
+            elif new_burger in menu_data["Burgers"]:
+                st.error("Ce burger existe déjà.")
             else:
-                menu.add_burger(new_burger, price)
-                st.success("✅ Ajouté")
+                menu.add_burger(new_burger, burger_price)
+                st.success(f"✅ Burger « {new_burger} » ajouté.")
                 st.rerun()
 
+        # --- SAUCE ---
         new_sauce = st.text_input("Nouvelle sauce", key="new_sauce")
-
-        if st.button("Ajouter sauce", key="add_sauce"):
-            if new_sauce in menu_data["Sauces"]:
-                st.error("Existe déjà")
+        if st.button("Ajouter la sauce", key="admin_add_sauce"):
+            if not new_sauce.strip():
+                st.error("Nom invalide")
+            elif new_sauce in menu_data["Sauces"]:
+                st.error("Cette sauce existe déjà.")
             else:
                 menu.add_sauce(new_sauce)
-                st.success("✅ Ajouté")
+                st.success(f"✅ Sauce « {new_sauce} » ajoutée.")
                 st.rerun()
 
-    # ✅ SYNC GITHUB (NOUVEAU)
+        # --- SUPPLÉMENT ---
+        new_supp = st.text_input("Nouveau supplément", key="new_supp")
+        supp_price = st.number_input("Prix supplément", min_value=0.01, step=0.01, key="supp_price")
+
+        if st.button("Ajouter le supplément", key="admin_add_supp"):
+            if not new_supp.strip():
+                st.error("Nom invalide.")
+            elif new_supp in menu_data["Suppléments"]:
+                st.error("Ce supplément existe déjà.")
+            else:
+                menu.add_supp(new_supp, supp_price)
+                st.success(f"✅ Supplément « {new_supp} » ajouté.")
+                st.rerun()
+
+        # --- VIANDE ---
+        new_viande = st.text_input("Nouvelle viande", key="new_viande")
+        viande_price = st.number_input("Prix viande", min_value=0.01, step=0.01, key="viande_price")
+
+        if st.button("Ajouter viande", key="admin_add_viande"):
+            if not new_viande.strip():
+                st.error("Nom invalide.")
+            elif new_viande in menu_data.get("Viandes", {}):
+                st.error("Cette viande existe déjà.")
+            else:
+                menu.add_viande(new_viande, viande_price)
+                st.success(f"✅ Viande « {new_viande} » ajoutée.")
+                st.rerun()
+
+    # ============================
+    # ✏️ MODIFIER BURGER
+    # ============================
+    with st.sidebar.expander("✏️ Modifier burger", expanded=False):
+
+        menu_data = menu.load_menu()
+
+        burgers = list(menu_data["Burgers"].keys())
+
+        if burgers:
+            burger_to_mod = st.selectbox("Burger", burgers, key="mod_burger_select")
+            default_price = menu_data["Burgers"][burger_to_mod]
+
+            new_name = st.text_input("Nouveau nom", key="mod_burger_name")
+            new_price = st.number_input("Nouveau prix", value=default_price, min_value=0.01)
+
+            if st.button("Modifier burger", key="mod_burger_btn"):
+                final_name = new_name if new_name else burger_to_mod
+                menu.modify_burger(burger_to_mod, final_name, new_price)
+                st.success("✅ Modifié")
+                st.rerun()
+        else:
+            st.info("Aucun burger")
+
+    # ============================
+    # 💾 SYNC GITHUB
+    # ============================
     st.sidebar.markdown("---")
 
-    if st.sidebar.button("💾 Sauvegarder sur GitHub", key="sync_github"):
+    if st.sidebar.button("💾 Synchroniser avec GitHub", key="sync_github"):
         ok1 = menu.sync_menu_github()
         ok2 = users.sync_users_github()
 
         if ok1 and ok2:
-            st.sidebar.success("✅ Sync OK")
+            st.sidebar.success("✅ Synchronisation OK")
         else:
             st.sidebar.error("❌ Erreur GitHub")
+
+    # ============================
+    # 🔌 DÉCONNEXION
+    # ============================
+    st.sidebar.markdown("---")
+
+    if st.sidebar.button("Déconnexion", key="admin_logout"):
+        st.session_state.user_id = None
+        st.session_state.user_name = None
+        st.session_state.admin_mode = False
+        st.rerun()
+
 
 # ============================================================
 # CLIENT
